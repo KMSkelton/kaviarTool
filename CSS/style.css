@@ -1,0 +1,46 @@
+/* This file controls color and images */
+header {
+  background-color: black;
+}
+header img {
+  max-width: 100%;
+  height: auto;
+}
+.wrapper:nth-child(odd) {
+  background-color: rgba(0, 63, 114, 0.4);
+}
+.wrapper2:nth-child(odd) {
+  background-color: rgba(0, 63, 114, 0.2);
+}
+.wrapper3{
+  border-top: 2px solid rgb(0, 63, 114);
+}
+input {
+  border: 2px solid black;
+}
+.fileUpload {
+  border: none;
+}
+.submit, .submit:active button[aria-pressed="true"] {
+  background-color: rgb(223, 131, 0);
+}
+footer {
+  background-color: rgba(0, 63, 114, 0.2);
+}
+.logo {
+  border: 1px solid white;
+  border-radius: 50%;
+}
+ul {
+  list-style: none;
+}
+a:link, a:visited {
+  color:rgba(0, 63, 114, 1);
+}
+a:hover {
+  color: rgb(201, 221, 3);
+}
+.queryKaviarButton {
+  border-radius: 1em;
+  background-color: rgb(223, 131, 0);
+}

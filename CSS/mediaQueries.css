@@ -1,0 +1,47 @@
+@media screen and (max-width: 400px) {
+  .kaviarLogo {
+  content: url("../assets/kaviarMobile.jpg");
+  max-height: 2em;
+  margin-left: 30%;
+  }
+  .wrapper, .wrapper2  {
+    padding: 0;
+    display: inline-block;
+    width: 100%
+  }
+  .leftSide, .leftSideAbout {
+    display: none;
+  }
+  .rightSide, .rightSideAbout {
+    display: block;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+  p, textarea, .fileUpload {
+    display: none;
+  }
+  input {
+    display: block;
+  }
+  label {
+    display: inline-block;
+    margin-top: 0.5em;
+    font-size: 90%;
+  }
+  .freeze::after{
+    font-size: 110%;
+    width: 100%;
+    content: "Specify the coordinate system:"
+  }
+  .positions::after {
+    font-size: 110%;
+    width: 100%;
+    content: "Specify your queries:"
+  }
+  .filters::After {
+    font-size: 110%;
+    width: 100%;
+    content: "Specify filters:"
+  }
+}

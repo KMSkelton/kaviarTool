@@ -1,0 +1,52 @@
+/* this file controls positioning and element size, including padding and margin */
+
+header {
+  margin-bottom: 0.5em;
+}
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 auto;
+}
+.wrapper, .wrapper2, .wrapper3 {
+  display: flex;
+}
+select {
+  margin: 0.5em;
+}
+.submit {
+  margin: 1% 0 1% 50%;
+}
+.details {
+  margin-left: 10%;
+}
+ul {
+  margin: 0;
+  padding: 0;
+}
+.leftSide {
+  margin: 1% 10% 0 5%;
+  width: 20%;
+}
+.rightSide {
+  width: 50%;
+  margin: 1% 10% 0 0;
+}
+.leftSideAbout {
+  margin: 1% 1% 1% 10%;
+  width: 10%;
+}
+.rightSideAbout {
+  margin: 1% 0 0 5%;
+  width: 50%;
+}
+.noExtraSpace {
+  margin: 0;
+}
+.queryKaviarButton {
+  height: 3em;
+  width: 6em;
+  padding: 0;
+  margin: 5% 0;
+}
+footer {
+  margin-top: 1em;
+}

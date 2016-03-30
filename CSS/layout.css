@@ -50,3 +50,8 @@ ul {
 footer {
   margin-top: 1em;
 }
+table {
+  cellpadding: 0.5em;
+  cellspacing: 0.5em;
+  border: 0;
+}

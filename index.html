@@ -21,108 +21,142 @@
       <legend>
         Kaviar Tool parameter input:
       </legend>
-      <form method="post" action="http://localhost/~denise/kaviarTool/cgi-bin/Kaviar" enctype="multipart/form-data" role="search">
-          <div class="wrapper">
-            <div class="leftSide">
-              <h4>1) Specify the coordinate system:</h4>
-            </div>
-            <div class="rightSide">
-              <div class="freeze"></div>
-              <label>Human Reference version (freeze) is:
-                <select name="frz">
-                  <option value="hg18">hg18 (NCBI Build 36.1)</option>
-                  <option value="hg19" selected="selected">hg19 (GRCh37)</option>
-                  <option value="hg38">hg38 (GRCh38)</option>
-                </select>
-              </label>
-              <br />
-              <label>Input coordinates are:
-                <select name="onebased">
-                  <option value="0">zero-based</option>
-                  <option value="1" selected="selected">one-based</option>
-                </select>
-              </label>
-              <br />
-              <label>Output coordinates are:
-                <select name="onebased_output">
-                  <option value="0">zero-based</option>
-                  <option value="1">one-based</option>
-                  <option value="2" selected="selected">Same as input</option>
-                </select>
-              </label>
-            </div>
-          </div>
-          <div class="wrapper">
-            <div class="leftSide">
-              <h4>2) Specify your queries</h4>
-              <p>Enter genomic positions or ranges, or <abbr title="Short Genetic Variants database">dbSNP</abbr> <abbr title="reference SNP cluster ID">rsids</abbr>. You can use a variety of <a href="http://db.systemsbiology.net/kaviar/KaviarInputFormats.html"
-                  target="blank">supported formats</a>.</p>
-              <p>Alternatively, list coordinates (e.g. paste into the box from Excel a list of chromosome : position coordinates and/or rsids like rs10136372):</p>
-            </div>
-            <div class="rightSide">
-              <div class="positions"></div>
-              <label>Chromosome:
-                <input type="text" name="chr" maxlength="8" pattern="^\w+$" title="Max Length: 8. This field accepts letters and numbers, no other characters." /> (e.g. chr1, chrX, 17)
-              </label>
-              <br />
-              <label>Coordinates:
-                <input type="text" name="pos" pattern="^[\d\-\s,]+$" title="This field only accepts numbers, hyphens (dashes), spaces, and commas." /> (e.g. "714019-714033", "77119, 555911,714019")
-              </label>
-              <br />
-              <textarea name="list" rows="10" cols="50" pattern="^[\w\-\s,]+$" title="This text area only accepts numbers, hyphens (dashes), spaces, and commas."></textarea>
-              <br />
-              <label class="fileUpload">Uploading a .txt file with the coordinates is another option:
-                <input class="fileUpload" type="file" name="uploaded_file" size="30" maxlength="200">
-              </label>
-            </div>
-          </div>
-          <div class="wrapper">
-            <div class="leftSide">
-              <h4>3) Specify Filters:</h4>
-            </div>
-            <div class="rightSide">
-              <div class="filters"></div>
-              <p class="noExtraSpace">
-                MAF (table/text/JSON output only).
-                <label>Min:
-                  <input type="text" name="min_maf">
-                </label>
-                <label>Max:
-                  <input type="text" name="max_maf">
-                </label>
-              </p>
-              <label>Variant Types:
-                <select name="variant_type">
-                  <option selected="selected" value="all">All</option>
-                  <option value="snvs">SNVs only</option>
-                  <option value="ranged">Indels and subsitutions only</option>
-                </select>
-              </label>
-            </div>
-          </div>
+      <form role="search">
+        <!-- method="get" action="http://localhost/~kristopherskelton/kaviarTool/cgi-bin/Kaviar" enctype="multipart/form-data"  -->
         <div class="wrapper">
-            <div class="leftSide">
-              <h4>4) Specify the output format:</h4>
-            </div>
-            <div class="rightSide">
-              <div class="format"></div>
-              <label>Preferred output format
-                <select name="format">
-                  <option selected="selected" value="table">table (easier on human eyes)</option>
-                  <option value="text">text (easier to parse by scripts)</option>
-                  <option value="json">JSON (JavaScript Object Notation)</option>
-                  <option value="vcf">VCF (Variant Call Format)</option>
-                </select>
-              </label>
-            </div>
+          <div class="leftSide">
+            <h4>1) Specify the coordinate system:</h4>
+          </div>
+          <div class="rightSide">
+            <div class="freeze"></div>
+            <label>Human Reference version (freeze) is:
+              <select id="frz" name="frz">
+                <option value="hg18">hg18 (NCBI Build 36.1)</option>
+                <option value="hg19" selected="selected">hg19 (GRCh37)</option>
+                <option value="hg38">hg38 (GRCh38)</option>
+              </select>
+            </label>
+            <br />
+            <label>Input coordinates are:
+              <select name="onebased">
+                <option value="0">zero-based</option>
+                <option value="1" selected="selected">one-based</option>
+              </select>
+            </label>
+            <br />
+            <label>Output coordinates are:
+              <select name="onebased_output">
+                <option value="0">zero-based</option>
+                <option value="1">one-based</option>
+                <option value="2" selected="selected">Same as input</option>
+              </select>
+            </label>
+          </div>
         </div>
-        <input class="submit" role="button" aria-pressed="false" type="submit" name=".submit">
+        <div class="wrapper">
+          <div class="leftSide">
+            <h4>2) Specify your queries</h4>
+            <p>Enter genomic positions or ranges, or <abbr title="Short Genetic Variants database">dbSNP</abbr> <abbr title="reference SNP cluster ID">rsids</abbr>. You can use a variety of <a href="http://db.systemsbiology.net/kaviar/KaviarInputFormats.html"
+                target="blank">supported formats</a>.</p>
+            <p>Alternatively, list coordinates (e.g. paste into the box from Excel a list of chromosome : position coordinates and/or rsids like rs10136372):</p>
+          </div>
+          <div class="rightSide">
+            <div class="positions"></div>
+            <label>Chromosome:
+              <input type="text" name="chr" maxlength="8" pattern="^\w+$" title="Max Length: 8. This field accepts letters and numbers, no other characters." /> (e.g. chr1, chrX, 17)
+            </label>
+            <br />
+            <label>Coordinates:
+              <input type="text" name="pos" pattern="^[\d\-\s,]+$" title="This field only accepts numbers, hyphens (dashes), spaces, and commas." /> (e.g. "714019-714033", "77119, 555911,714019")
+            </label>
+            <br />
+            <textarea name="list" rows="10" cols="50" pattern="^[\w\-\s,]+$" title="This text area only accepts numbers, hyphens (dashes), spaces, and commas."></textarea>
+            <br />
+            <label class="fileUpload">Uploading a .txt file with the coordinates is another option:
+              <input class="fileUpload" type="file" name="uploaded_file" size="30" maxlength="200">
+            </label>
+          </div>
+        </div>
+        <div class="wrapper">
+          <div class="leftSide">
+            <h4>3) Specify Filters:</h4>
+          </div>
+          <div class="rightSide">
+            <div class="filters"></div>
+            <p class="noExtraSpace">
+              MAF (table/text/JSON output only).
+              <label>Min:
+                <input type="text" name="min_maf">
+              </label>
+              <label>Max:
+                <input type="text" name="max_maf">
+              </label>
+            </p>
+            <label>Variant Types:
+              <select name="variant_type">
+                <option selected="selected" value="all">All</option>
+                <option value="snvs">SNVs only</option>
+                <option value="ranged">Indels and subsitutions only</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="wrapper">
+          <div class="leftSide">
+            <h4>4) Specify the output format:</h4>
+          </div>
+          <div class="rightSide">
+            <div class="format"></div>
+            <label>Preferred output format
+              <select name="format">
+                <option selected="selected" value="table">table (easier on human eyes)</option>
+                <option value="text">text (easier to parse by scripts)</option>
+                <option value="json">JSON (JavaScript Object Notation)</option>
+                <option value="vcf">VCF (Variant Call Format)</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <input class="submit" role="button" aria-pressed="false" type="submit" name="submit" id="submit">
       </form>
     </fieldset>
+  </div class="closesWrapper">
+  <div class="wrapper">
+    <table id="table_id" class="display">
+      <thead>
+        <tr>
+          <th>Position</th>
+          <th>RSID</th>
+          <th>Variant</th>
+          <th>People/Population</th>
+          <th>Comments</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Load data from server</td>
+          <td>Load data from server</td>
+          <td>Load data from server</td>
+          <td>Load data from server</td>
+          <td>Load data from server</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Position</th>
+          <th>RSID</th>
+          <th>Variant</th>
+          <th>People/Population</th>
+          <th>Comments</th>
+        </tr>
+      </tfoot>
+    </table>
   </div class="closesWrapper">
   <footer>
     <a href="aboutKaviar.html">Additional Information & Beacon Portal</a>
   </footer>
 </body>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
+<script src="js/app.js"></script>
 </html>

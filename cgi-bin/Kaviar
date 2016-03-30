@@ -1,23 +1,29 @@
 #!/usr/bin/perl
 $|=1;
-
+print header(
+  -type => 'text/turtle',
+  -content_location => 'mydata.ttl',
+  -access_control_allow_origin => '*',
+);
 use strict;
 use CGI qw/:standard :html3 -no_debug/;
 $CGI::POST_MAX=1024 * 100;  # max 100K posts
 use FindBin;
-use lib "/Users/denise/Kaviar/lib";
+use lib "/Library/Perl/Updates/5.18.2/darwin-thread-multi-2level";
 #use lib "$FindBin::Bin/../Kaviar/lib";
 use Data::Dumper;
-use Kaviar;
 use POSIX qw(strftime);
+use lib "/Users/kristopherskelton/websites/kaviar/Kaviar-160113-Public/lib";
+use Kaviar;
 use lib "/var/root/perl5/lib/perl5";
-use lib "/var/root/perl5/lib/perl5/SVG";
 
 my ($kavdir) =  "$FindBin::Bin" =~ m|.*/(\S+)/cgi-pub$|;
 
 my $logfile = "Kaviar.uselog";
+# print header('content-type: application/json; charset=utf-8');
+# print header("access-control-allow-origin: *");
 
-print header('text/json');
+print header('text/jsonp');
 my $frz = param("frz");
 my $onebased = param("onebased");
 my $onebased_output = param("onebased_output");
@@ -241,7 +247,7 @@ if ($show eq "version") {
 	      #print "<pre>", Dumper $all_obs_href, "</pre>";
 	      my $rsidref = $res{'rsids'};
 	      #my @vars = sort keys %{$res{'sources'}};
-	      # Sort by decreasing AC. 
+	      # Sort by decreasing AC.
 	      my @vars = sort {$stat{'counts'}{$b} <=> $stat{'counts'}{$a}} keys  %{$stat{'counts'}};
 
 	      # Create a link to the UCSC genome browser for the output position/range

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 $|=1;
 print header(
-  -type => 'text/turtle',
+  -type => 'text/json',
   -content_location => 'mydata.ttl',
   -access_control_allow_origin => '*',
 );
@@ -20,10 +20,8 @@ use lib "/var/root/perl5/lib/perl5";
 my ($kavdir) =  "$FindBin::Bin" =~ m|.*/(\S+)/cgi-pub$|;
 
 my $logfile = "Kaviar.uselog";
-# print header('content-type: application/json; charset=utf-8');
-# print header("access-control-allow-origin: *");
 
-print header('text/jsonp');
+# print header('text/json');
 my $frz = param("frz");
 my $onebased = param("onebased");
 my $onebased_output = param("onebased_output");

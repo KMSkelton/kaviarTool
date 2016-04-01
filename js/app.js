@@ -44,12 +44,13 @@ $.ajax({
     //  console.log("element['varInfo']", element["varInfo"]);
      var infoCell = [];
      $.each(data.sites[index]["varInfo"], function(infoIndex, infoElement){
+       var dataForCells = "<td>" + infoElement["variant"] + "(" + infoElement["frequency"] + ")" + "</td><td>" + infoElement["sources"] + "</td></tr>";
        console.log(data.sites);
        if (infoIndex > 0){
          console.log("I'm in the if! The next TR should have a class.");
-         infoCell.push("<tr><td>" + infoElement["variant"] + "(" + infoElement["frequency"] + ")" + "</td><td>" + infoElement["sources"] + "</td></tr></tr>");
+         infoCell.push("<tr>" + dataForCells);
        } else {
-       infoCell.push("<td>" + infoElement["variant"] + "(" + infoElement["frequency"] + ")" + "</td><td>" + infoElement["sources"] + "</td></tr>");
+       infoCell.push(dataForCells);
        console.log("infoIndex: ", infoIndex);
        console.log("infoElement", infoElement["variant"]);
        console.log("infoCell", infoCell);

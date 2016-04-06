@@ -21,8 +21,7 @@
       <legend>
         Kaviar Tool parameter input:
       </legend>
-      <form role="search">
-        <!-- method="get" action="http://localhost/~kristopherskelton/kaviarTool/cgi-bin/Kaviar" enctype="multipart/form-data"  -->
+      <form id="kaviarSearch" role="search" enctype="multipart/form-data" method="post" action="">
         <div class="wrapper">
           <div class="leftSide">
             <h4>1) Specify the coordinate system:</h4>
@@ -84,7 +83,7 @@
           <div class="rightSide">
             <div class="filters"></div>
             <p class="noExtraSpace">
-              MAF (table/text/JSON output only).
+              MAF (table/text/JSON output only).<br />
               <label>Min:
                 <input type="text" name="min_maf">
               </label>
@@ -121,6 +120,7 @@
       </form>
     </fieldset>
   </div class="closesWrapper">
+  <div id="filtered" class="wrapper"></div>
   <div class="wrapper">
     <table id="table_id" class="display">
       <thead>
@@ -150,6 +150,5 @@
   </footer>
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
 <script src="js/app.js"></script>
 </html>

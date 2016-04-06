@@ -13,13 +13,13 @@ use lib "/Library/Perl/Updates/5.18.2/darwin-thread-multi-2level";
 #use lib "$FindBin::Bin/../Kaviar/lib";
 use Data::Dumper;
 use POSIX qw(strftime);
-use lib "/Users/kristopherskelton/websites/kaviar/Kaviar-160113-Public/lib";
+use lib "/Users/denise/Kaviar/lib";
 use Kaviar;
 use lib "/var/root/perl5/lib/perl5";
 
 my ($kavdir) =  "$FindBin::Bin" =~ m|.*/(\S+)/cgi-pub$|;
 
-my $logfile = "Kaviar.uselog";
+my $logfile = "/tmp/Kaviar.uselog";
 
 # print header('text/json');
 my $frz = param("frz");
@@ -79,7 +79,9 @@ my @new = map { sanitize($_) } @coordlist;
 my @allchroms = map {"chr$_"} (1..22, 'X', 'Y', 'M');
 
 chomp(my $now = `date`);
-open LOGF, ">>$logfile";
+open LOGF, ">>$logfile" or print "Can't open logfile $logfile $!";
+my $test = param('file');
+print LOGF "params: $chrom $pos $list $filename $test\n";
 if ($show) {
   print LOGF join("\t", $now, $ENV{'REMOTE_HOST'} || $ENV{'REMOTE_ADDR'}, $format, $show), "\n";
 } else {
@@ -230,6 +232,7 @@ if ($show eq "version") {
 	my $range = ($i == $j) ? $coord+$onebased_output : sprintf "%d-%d", $coord+$onebased_output, $coord2+$onebased_output;
 	my $input_pos_link = join("", "<a href=\"", $ucsc, $chrom, ":", $coord-50, "-", $coord2+50, "\">", "$chrom:$range", "</a>");
 	# If any variants were found in Kaviar ...
+	my $retained = 0;
 	if (@res) {
 
 	    for my $site (@res) {
@@ -241,6 +244,7 @@ if ($show eq "version") {
 	      # Get the statistics
 	      my %stat = $kv{$frz}->digest(%res);
 	      next unless (($stat{'maf'} > $min_maf) && ($stat{'maf'} < $max_maf));
+	      $retained = 1;
 	      my $all_obs_href = $stat{'all_obs'};
 	      #print "<pre>", Dumper $all_obs_href, "</pre>";
 	      my $rsidref = $res{'rsids'};

@@ -244,6 +244,7 @@ if ($show eq "version") {
 	      # Get the statistics
 	      my %stat = $kv{$frz}->digest(%res);
 	      next unless (($stat{'maf'} > $min_maf) && ($stat{'maf'} < $max_maf));
+		
 	      $retained = 1;
 	      my $all_obs_href = $stat{'all_obs'};
 	      #print "<pre>", Dumper $all_obs_href, "</pre>";
@@ -266,7 +267,9 @@ if ($show eq "version") {
 		printf "    \"end\" : %d ,\n", $end-1+$onebased_output;
 		my $rsids = join(", ", map {"\"$_\""} @{$rsidref}) if defined $rsidref;
 		print "    \"rsids\" : [$rsids],\n" if $rsids;
-
+	        if ($stat{'platform_specific'}) {
+			print "    \"comments\":\"Warning: seen mostly/only on $stat{'platform_specific'} platform.\",\n";
+		}
 		# variants. Incorrect. Deprecated.
 		#@var = map {"\"$_\" : [".join(",", map {ord($_)} $kv{$frz}->separateCodes($res{'sources'}{$_}   ))."]"} @vars;
 		#my @var = map {"\"$_\" : [".join(",", map {ord($_)} @{$kv{$frz}->separateCodes($res{'sources'}{$_})})."]"} @vars;

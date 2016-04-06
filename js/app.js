@@ -66,45 +66,7 @@ $.ajax({
      $("#filtered").append("<p>All results filtered by MAF filters</p>");
     } else {
      $("#table_id").show();
-    console.log(data.sites[0]["chromosome"]);
-   $.each(data.sites, function(index, element){
-     var rsid = data.sites[index]["rsids"];
-     if (rsid === undefined){
-       data.sites[index]["rsids"] = ".";
-       rsid = data.sites[index]["rsids"];
-     } else {
-       rsid = element["rsids"][0];
-     };
-    //  console.log(rsid + " = rsid");
-    //  console.log(element);
-    //  console.log("data.sites", data.sites);
-    //  console.log("element['varInfo']", element["varInfo"]);
-     var infoCell = [];
-     $.each(data.sites[index]["varInfo"], function(infoIndex, infoElement){
-       var dataForCells = "<td>" + infoElement["variant"] + "(" + infoElement["frequency"] + ")" + "</td><td>" + infoElement["sources"] + "</td></tr>";
-       console.log(data.sites);
-       if (infoIndex > 0){
-         console.log("I'm in the if! The next TR should have a class.");
-         infoCell.push("<tr>" + dataForCells);
-       } else {
-       infoCell.push(dataForCells);
-       console.log("infoIndex: ", infoIndex);
-       console.log("infoElement", infoElement["variant"]);
-       console.log("infoCell", infoCell);
-     }
-     })
-     console.log(infoCell);
-     var rowSpan = infoCell.length;
-     var row = "<tr><td rowspan=" + rowSpan + ">" +
-     element["chromosome"] +
-     " " +
-     element["position"] +
-     "</td><td rowspan=" + rowSpan + ">" +
-     rsid +
-     "</td>" +
-     infoCell;
-     $("#tableBody").append(row);
-   });
+     displayTable(data);
    } // end if data
  },
  error: function(jqXHR, textStatus, errorThrown){

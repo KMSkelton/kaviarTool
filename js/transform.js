@@ -20,21 +20,24 @@ function displayTable(data) {
     // process the rest of the cells
      $.each(data.sites[index]["varInfo"], function(infoIndex, infoElement){
        var dataForCells = createCell(infoElement);
-       console.log(data.sites);
-       console.log("infoIndex: ", infoIndex);
-       console.log("infoElement", infoElement["variant"]);
        row = createRow(element, 0, dataForCells);
        $("#tableBody").append(row);
      })
    });
 } // end displayTable
 
-function createRow(element, rowSpan, infoCell) {
-     var row = "<tr>";
+function createRow(element, rowSpan, infoCell, rowClass) {
+     var row;
      // create cells for chromosome and rsids that rowspan
      if (rowSpan) {
-       row += "<td rowspan=" + rowSpan + ">" + element["chromosome"] + " " + element["position"] + "</td>";
+       row = "<tr><td rowspan=" + rowSpan + ">" + element["chromosome"] + " " + element["position"] + "</td>";
        row += "<td rowspan=" + rowSpan + ">" + element["rsids"] + "</td>";
+     } else {
+	if (rowClass) {
+	row = "<tr class=\"" +  rowClass + "\">";
+        } else {
+          row = "<tr>";
+        }
      }
      row += infoCell;
      if (rowSpan) {

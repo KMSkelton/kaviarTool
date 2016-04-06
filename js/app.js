@@ -44,6 +44,7 @@ $("#table_id").hide();
 console.log(kaviarData);
 console.log("contentType "+ctType);
 console.log("processData "+process);
+      $("#loading").show();
 $.ajax({
       type: "POST",
       url: "http://localhost/~denise/kaviarTool/cgi-bin/Kaviar",
@@ -58,6 +59,8 @@ $.ajax({
         console.log(settings.url+ '?' + settings.data);
       },
  success: function(data, textStatus, jqXHR){
+
+    $("#loading").hide();
     console.log("woot - I'm in success!");
     console.log(data);
     console.log(data.sites.length);

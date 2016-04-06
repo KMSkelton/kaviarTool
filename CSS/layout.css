@@ -68,3 +68,18 @@ td, th {
   border-collapse: collapse;
   display: none;
 }
+#loading {
+  position: fixed;
+  top: 30%;
+  left: 30%;
+  width: 200px;
+  height: 200px;
+  background-color: white;
+  border: 0.5em solid black;
+  display: none;
+}
+#loading img{
+  width: 100%;
+  height: 100%;
+  object-fit: none;
+}

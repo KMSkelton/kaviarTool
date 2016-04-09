@@ -44,6 +44,12 @@ a:hover {
   border-radius: 1em;
   background-color: rgb(223, 131, 0);
 }
-.tableRow {
+.odd {
   background-color: rgba(0, 63, 114, 0.2);
+}
+.even {
+  background-color: rgba(0,0,0,0);
+}
+#results {
+  white-space: pre-wrap;
 }

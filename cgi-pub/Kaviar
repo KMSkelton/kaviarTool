@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/tools/bin/perl
 $|=1;
 print header(
   -type => 'text/json',
@@ -9,17 +9,14 @@ use strict;
 use CGI qw/:standard :html3 -no_debug/;
 $CGI::POST_MAX=1024 * 100;  # max 100K posts
 use FindBin;
-use lib "/Library/Perl/Updates/5.18.2/darwin-thread-multi-2level";
-#use lib "$FindBin::Bin/../Kaviar/lib";
 use Data::Dumper;
 use POSIX qw(strftime);
-use lib "/Users/denise/Kaviar/lib";
+use lib "/proj/hoodlab/share/kaviar/Kaviar-160113-Public/lib";
 use Kaviar;
-use lib "/var/root/perl5/lib/perl5";
 
 my ($kavdir) =  "$FindBin::Bin" =~ m|.*/(\S+)/cgi-pub$|;
 
-my $logfile = "/tmp/Kaviar.uselog";
+my $logfile = "Kaviar.uselog";
 
 # print header('text/json');
 my $frz = param("frz");

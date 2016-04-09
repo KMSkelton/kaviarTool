@@ -1,4 +1,14 @@
 $(document).ready(function() {
+
+  Handlebars.registerHelper('cycle', function(value, index, block) {
+    var values = value.split(' ');
+    return values[index % values.length];
+  });
+
+  Handlebars.registerHelper('json', function(context) {
+    return JSON.stringify(context);
+  });
+
   $("#table_id").hide();
   $("form").submit(function(event) {
       event.preventDefault();
@@ -43,7 +53,7 @@ $(document).ready(function() {
       $("#loading").show();
       $.ajax({
 	type: "POST",
-	url: "http://localhost/~denise/kaviarTool/cgi-bin/Kaviar",
+	url: "http://db.systemsbiology.net/kaviar-beta/cgi-pub/Kaviar",
 	data: kaviarData,
 	contentType: ctType,
 	processData: process,
@@ -51,18 +61,48 @@ $(document).ready(function() {
 	//error: function (xhr) {
 	   //alert(JSON.stringify(xhr));
 	//},
-	//beforeSend: function(jqXHR, settings) {
-	//  console.log(settings.url+ '?' + settings.data);
-	//},
+	beforeSend: function(jqXHR, settings) {
+	  console.log(settings.url+ '?' + settings.data);
+	},
 	success: function(data, textStatus, jqXHR){
 	  $("#loading").hide();
 	  if (data.sites.length === 0 ) { // if all results were filtered out by MAF filters
 	     $("#filtered").show();
 	     $("#filtered").append("<p>All results filtered by MAF filters</p>");
 	  } else {
-	     $("#table_id").show();
-	     displayTable(data);
-	  } // end if data
+        //display the table
+        var templateFile = location.origin+"/kaviar-beta/templates/table.html";
+        $.get(templateFile, function(response) {
+          var template = response;
+          var templateScript = Handlebars.compile(template);
+          var html = templateScript(data);
+          $("#result").html(html);
+          $("#result").show();
+        });
+        // display download link for text
+        var downloadTemplateFile = location.origin+"/kaviar-beta/templates/text.download.html";
+        var downloadLinkName = "Download text.";
+        $.get(downloadTemplateFile, function(response) {
+          var downloadScript = Handlebars.compile(response);
+          var html = downloadScript(data);
+          // create download link
+          var link = '<a download="kaviar.txt" href="data:text/plain;charset-utf8,'+encodeURIComponent(html)+'">'+downloadLinkName+'</a><br />';
+          $("#downloadLink").append(link);
+        });
+	  
+        // display download link for json
+        downloadTemplateFile = location.origin+"/kaviar-beta/templates/json.download.html";
+        var downloadLinkNameJSON = "Download JSON.";
+        $.get(downloadTemplateFile, function(response) {
+          var downloadScript = Handlebars.compile(response);
+          var html = downloadScript(data);
+          // create download link
+          var link = '<a download="kaviar.json" href="data:application/json;charset-utf8,'+encodeURIComponent(html)+'">'+downloadLinkNameJSON+'</a>';
+          $("#downloadLink").append(link);
+        });
+	  
+
+      } // end if data
 	},
 	error: function(jqXHR, textStatus, errorThrown){
 	  console.log(jqXHR + "  jqXHR in error");

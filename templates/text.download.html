@@ -1,0 +1,6 @@
+{{#each sites as |site siteIndex|}}
+  {{~#each varInfo}}
+    {{~../chromosome}}	{{ ../position }}	
+    {{~#if ../rsids}} {{~#each ../rsids}} {{ this }} {{~#unless @last}},{{/unless}} {{~/each}} {{~else}}.{{~/if}}	{{ variant }}	{{ frequency }}	{{ sources}}	{{ ../comments }}{{^../comments}}.{{/../comments}}
+    {{/each }}
+{{~/each}}

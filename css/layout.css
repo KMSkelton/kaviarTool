@@ -8,6 +8,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 .wrapper, .wrapper2, .wrapper3 {
   display: flex;
+  margin: 0.5em;
 }
 select {
   margin: 0.5em;

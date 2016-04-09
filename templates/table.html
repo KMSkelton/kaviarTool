@@ -1,0 +1,48 @@
+     <table id="table_id" class="display">
+      <thead>
+        <tr>
+          <th>Position</th>
+          <th>RSID</th>
+          <th>Variant</th>
+          <th>People/ Population</th>
+          <th>Comments</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+          {{#each sites as |site siteIndex|}}
+            {{#each varInfo}}
+            <tr class="{{cycle 'odd even' siteIndex}}">
+            {{#if @first }}
+              <td rowspan="{{../varInfo.length}}">{{ ../chromosome}} {{ ../position }}</td>
+              <td rowspan="{{../varInfo.length}}">
+              {{#each ../rsids}}
+                  {{ this }}{{#unless @last}},{{/unless}}
+              {{/each}}
+              </td>
+            {{else }}
+            {{/if }}
+            <td>
+                {{ variant }} ({{ frequency }})
+           </td>
+            <td>
+              {{ sources}}
+            </td>
+            {{#if @first}}
+            <td rowspan="{{../varInfo.length}}">
+              {{ ../comments }}
+            </td>
+            {{/if}}
+          </tr>
+            {{/each }}
+          {{/each}} <!-- end each sites -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Position</th>
+          <th>RSID</th>
+          <th>Variant</th>
+          <th>People/ Population</th>
+          <th>Comments</th>
+        </tr>
+      </tfoot>
+    </table>

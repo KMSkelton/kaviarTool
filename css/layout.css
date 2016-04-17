@@ -81,6 +81,12 @@ td, th {
 }
 #loading img{
   width: 100%;
-  height: 100%;
+  height: 80%;
   object-fit: none;
+}
+#loading p {
+  padding-left: 5%;
+}
+.collapsed {
+  display: none;
 }

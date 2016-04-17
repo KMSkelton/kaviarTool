@@ -70,39 +70,41 @@ $(document).ready(function() {
 	     $("#filtered").show();
 	     $("#filtered").append("<p>All results filtered by MAF filters</p>");
 	  } else {
-        //display the table
-        var templateFile = location.origin+"/kaviar-beta/templates/table.html";
-        $.get(templateFile, function(response) {
-          var template = response;
-          var templateScript = Handlebars.compile(template);
-          var html = templateScript(data);
-          $("#result").html(html);
-          $("#result").show();
-        });
-        // display download link for text
-        var downloadTemplateFile = location.origin+"/kaviar-beta/templates/text.download.html";
-        var downloadLinkName = "Download text.";
-        $.get(downloadTemplateFile, function(response) {
-          var downloadScript = Handlebars.compile(response);
-          var html = downloadScript(data);
-          // create download link
-          var link = '<a download="kaviar.txt" href="data:text/plain;charset-utf8,'+encodeURIComponent(html)+'">'+downloadLinkName+'</a><br />';
-          $("#downloadLink").append(link);
-        });
+             //display the table
+             var templateFile = location.origin+"/kaviar-beta/templates/table.html";
+             $.get(templateFile, function(response) {
+               var template = response;
+               var templateScript = Handlebars.compile(template);
+               var html = templateScript(data);
+               $("#result").html(html);
+               $("#result").show();
+             });
+             // display download link for text
+             var downloadTemplateFile = location.origin+"/kaviar-beta/templates/text.download.html";
+             var downloadLinkName = "Download text.";
+             $.get(downloadTemplateFile, function(response) {
+               var downloadScript = Handlebars.compile(response);
+               var html = downloadScript(data);
+               // create download link
+               var link = '<a download="kaviar.txt" href="data:text/plain;charset-utf8,'+encodeURIComponent(html)+'">'+downloadLinkName+'</a><br />';
+               $("#downloadLink").append(link);
+             });
 	  
-        // display download link for json
-        downloadTemplateFile = location.origin+"/kaviar-beta/templates/json.download.html";
-        var downloadLinkNameJSON = "Download JSON.";
-        $.get(downloadTemplateFile, function(response) {
-          var downloadScript = Handlebars.compile(response);
-          var html = downloadScript(data);
-          // create download link
-          var link = '<a download="kaviar.json" href="data:application/json;charset-utf8,'+encodeURIComponent(html)+'">'+downloadLinkNameJSON+'</a>';
-          $("#downloadLink").append(link);
-        });
+             // display download link for json
+             downloadTemplateFile = location.origin+"/kaviar-beta/templates/json.download.html";
+             var downloadLinkNameJSON = "Download JSON.";
+             $.get(downloadTemplateFile, function(response) {
+               var downloadScript = Handlebars.compile(response);
+               var html = downloadScript(data);
+               // create download link
+               var link = '<a download="kaviar.json" href="data:application/json;charset-utf8,'+encodeURIComponent(html)+'">'+downloadLinkNameJSON+'</a>';
+               $("#downloadLink").append(link);
+             });
 	  
 
-      } // end if data
+          } // end if data
+          $("#kaviarSearch").toggleClass("collapsed");
+          $("kaviarForm").toggleClass("wrapper");
 	},
 	error: function(jqXHR, textStatus, errorThrown){
 	  console.log(jqXHR + "  jqXHR in error");
@@ -111,4 +113,13 @@ $(document).ready(function() {
 	}
       });
   }); //end form submit
+
+  $(".expander").click(function() {
+    console.log("expander clicked");
+    console.log($(this).html());
+    buttonText = $(this).html() == '+' ? '-' : '+';
+    $("#kaviarSearch").toggleClass("collapsed");
+    return false;
+  });
+
 });// end document.ready

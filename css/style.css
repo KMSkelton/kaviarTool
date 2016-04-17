@@ -53,3 +53,8 @@ a:hover {
 #results {
   white-space: pre-wrap;
 }
+span.expander {
+  cursor: pointer;
+  width: 13px;
+  display: inline-block;
+}

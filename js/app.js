@@ -104,6 +104,7 @@ $(document).ready(function() {
 
           } // end if data
           $("#kaviarSearch").toggleClass("collapsed");
+	  $("#kaviarFieldSet").toggleClass("noBorder");
           $("kaviarForm").toggleClass("wrapper");
 	},
 	error: function(jqXHR, textStatus, errorThrown){
@@ -119,6 +120,7 @@ $(document).ready(function() {
     console.log($(this).html());
     buttonText = $(this).html() == '+' ? '-' : '+';
     $("#kaviarSearch").toggleClass("collapsed");
+    $("#kaviarFieldSet").toggleClass("noBorder");
     return false;
   });
 

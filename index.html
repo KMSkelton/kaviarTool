@@ -17,11 +17,8 @@
     <img class="kaviarLogo" src="assets/kaviarBanner.jpg" alt="image of black caviar with one orange egg on left side. Text reads 'Kaviar. Known variants search tool. A simple tool for answering a specific question: What variants have been reported for a range of genomic locations'.">
   </header>
   <div class="wrapper" id="kaviarForm">
-    <fieldset>
-      <legend>
-        <span class="expander">+</span>
-        Kaviar Tool parameter input:
-      </legend>
+    <fieldset id="kaviarFieldSet">
+      <legend><span class="expander">+ Kaviar Tool parameter input:</span></legend>
       <form id="kaviarSearch" role="search" enctype="multipart/form-data" method="post" action="">
         <div class="wrapper">
           <div class="leftSide">
@@ -107,7 +104,7 @@
   </div class="closesWrapper">
   <div id="loading"><img src="assets/loader.gif">Loading...</div>
   <div id="filtered" class="wrapper"></div class="closesWrapper">
-  <div class="wrapper" id="result"> </div class="closesWrapper">
+  <div id="result" class="wrapper"> </div class="closesWrapper">
   <div id="downloadLink"></div>
   <footer>
     <a href="aboutKaviar.html">Additional Information & Beacon Portal</a>

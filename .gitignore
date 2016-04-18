@@ -1,3 +1,5 @@
 cgi-bin
 cgi-bin/original_Kaviar.pl
 Kaviar.uselog
+.DS*
+*.swp

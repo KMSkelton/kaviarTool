@@ -55,6 +55,9 @@ a:hover {
 }
 span.expander {
   cursor: pointer;
-  width: 13px;
   display: inline-block;
+  text-decoration: underline;
+}
+fieldset.noBorder {
+  border: none;
 }

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Kaviar - Known VARiants in the human genome, release 160113</title>
+  <link rel="shortcut icon" type="image/x-icon" href="assets/favicon.ico">
+  <link rel="stylesheet" href="css/typography.css" media="screen">
+  <link rel="stylesheet" href="css/layout.css" media="screen">
+  <link rel="stylesheet" href="css/style.css" media="screen">
+  <link rel="stylesheet" href="css/mediaQueries.css" media="screen">
+</head>
+
+<body>
+  <header role="banner">
+    <img class="kaviarLogo" src="assets/kaviarBanner.jpg" alt="image of black caviar with one orange egg on left side. Text reads 'Kaviar. Known variants search tool. A simple tool for answering a specific question: What variants have been reported for a range of genomic locations'.">
+  </header>
+  <div class="wrapper" id="kaviarForm">
+    <fieldset id="kaviarFieldSet">
+      <legend><span class="expander">+ Kaviar Tool parameter input:</span></legend>
+      <form id="kaviarSearch" role="search" enctype="multipart/form-data" method="post" action="">
+        <div class="wrapper">
+          <div class="leftSide">
+            <h4>1) Specify the coordinate system:</h4>
+          </div>
+          <div class="rightSide">
+            <div class="freeze"></div>
+            <label>Human Reference version (freeze) is:
+              <select id="frz" name="frz">
+                <option value="hg18">hg18 (NCBI Build 36.1)</option>
+                <option value="hg19" selected="selected">hg19 (GRCh37)</option>
+                <option value="hg38">hg38 (GRCh38)</option>
+              </select>
+            </label>
+            <br />
+            <label>Input coordinates are:
+              <select name="onebased">
+                <option value="0">zero-based</option>
+                <option value="1" selected="selected">one-based</option>
+              </select>
+            </label>
+            <br />
+            <label>Output coordinates are:
+              <select name="onebased_output">
+                <option value="0">zero-based</option>
+                <option value="1">one-based</option>
+                <option value="2" selected="selected">Same as input</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="wrapper">
+          <div class="leftSide">
+            <h4>2) Specify your queries</h4>
+            <p>Enter genomic positions or ranges, or <abbr title="Short Genetic Variants database">dbSNP</abbr> <abbr title="reference SNP cluster ID">rsids</abbr>. You can use a variety of <a href="http://db.systemsbiology.net/kaviar/KaviarInputFormats.html"
+                target="blank">supported formats</a>.</p>
+            <p>Alternatively, list coordinates (e.g. paste into the box from Excel a list of chromosome : position coordinates and/or rsids like rs10136372):</p>
+          </div>
+          <div class="rightSide">
+            <div class="positions"></div>
+            <label>Chromosome:
+              <input type="text" name="chr" maxlength="8" pattern="^\w+$" title="Max Length: 8. This field accepts letters and numbers, no other characters." /> (e.g. chr1, chrX, 17)
+            </label>
+            <br />
+            <label>Coordinates:
+              <input type="text" name="pos" pattern="^[\d\-\s,]+$" title="This field only accepts numbers, hyphens (dashes), spaces, and commas." /> (e.g. "714019-714033", "77119, 555911,714019")
+            </label>
+            <br />
+            <textarea name="list" rows="10" cols="50" pattern="^[\w\-\s,]+$" title="This text area only accepts numbers, hyphens (dashes), spaces, and commas."></textarea>
+            <br />
+            <label class="fileUpload">Uploading a .txt file with the coordinates is another option:
+              <input class="fileUpload" type="file" name="uploaded_file" size="30" maxlength="200">
+            </label>
+          </div>
+        </div>
+        <div class="wrapper">
+          <div class="leftSide">
+            <h4>3) Specify Filters:</h4>
+          </div>
+          <div class="rightSide">
+            <div class="filters"></div>
+            <p class="noExtraSpace">
+              MAF (table/text/JSON output only).<br />
+              <label>Min:
+                <input type="text" name="min_maf">
+              </label>
+              <label>Max:
+                <input type="text" name="max_maf">
+              </label>
+            </p>
+            <label>Variant Types:
+              <select name="variant_type">
+                <option selected="selected" value="all">All</option>
+                <option value="snvs">SNVs only</option>
+                <option value="ranged">Indels and subsitutions only</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <input class="submit" role="button" aria-pressed="false" type="submit" name="submit" id="submit">
+      </form>
+    </fieldset>
+  </div class="closesWrapper">
+  <div id="loading"><img src="assets/loader.gif">Loading...</div>
+  <div id="filtered" class="wrapper"></div class="closesWrapper">
+  <div id="result" class="wrapper"> </div class="closesWrapper">
+  <div id="downloadLink"></div>
+  <footer>
+    <a href="aboutKaviar.html">Additional Information & Beacon Portal</a>
+  </footer>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+<script src="js/transform.js"></script>
+<script src="js/app.js"></script>
+</html>

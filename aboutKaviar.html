@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Kaviar - Known VARiants in the human genome, release 160113</title>
+  <link rel="shortcut icon" type="image/x-icon" href="assets/favicon.ico">
+  <link rel="stylesheet" href="css/layout.css" media="screen">
+  <link rel="stylesheet" href="css/style.css" media="screen">
+  <link rel="stylesheet" href="css/typography.css" media="screen">
+</head>
+
+<body>
+  <header>
+    <img src="assets/kaviarBanner.jpg" alt="image of black caviar with one orange egg on left side. Text reads 'Kaviar. Known variants search tool. A simple tool for answering a specific question: WHat variants have been reported for a range of genomic locations'.">
+  </header>
+  <div class="details">
+    <p>
+      <b>Kaviar</b> is a compilation of SNVs, indels, and complex variants observed in humans, designed to facilitate testing for the novelty and frequency of observed variants.
+    </p>
+  </div>
+  <div class="wrapper2">
+    <div class="leftSideAbout">
+      <h4>About</h4>
+    </div>
+    <div class="rightSideAbout">
+      <ul>
+        <li>Released: January 15, 2016 (ver 160113-Public)</li>
+        <li>Kaviar contains 162 million SNV sites (including 25M ni in dbSNP) and incorporates data from <a href="http://db.systemsbiology.net/kaviar/cgi-pub/Kaviar.pl?show=sources">35 projects</a> encompassing 77,781 individuals (13.2K whole genome, 64.6K
+          exome).
+        </li>
+        <li>Kaviar also contains 51 million short indels and subsitutions from <a href="http://db.systemsbiology.net/kaviar/KaviarRangedSources.html">a subset</a> of the data sources.</li>
+        <li>Kaviar excludes cancer genomes but includes some data from cell lines and individuals affected by disease.</li>
+        <li>Efforts are made to exclude data from related individuals.</li>
+        <li>
+          <a href="http://db.systemsbiology.net/kaviar/Kaviar.release_notes.html">Release notes</a>, <a href="http://db.systemsbiology.net/kaviar/Kaviar.issues.html">known issues</a>, and <a href="http://db.systemsbiology.net/kaviar/Kaviar.changelog.html">changelog</a>.
+        </li>
+        <li>
+          <a href="http://db.systemsbiology.net/kaviar/KaviarSourceDetails.html">Auxiliary info</a> for some data sources.
+        </li>
+      </ul>
+      <em>Caution: variant novelty need not imply functional or clinical relevance. Conversely, known variants may have unknown functional implications. In some cases, even the reference form may be the detrimental variant.</em>
+    </div>
+  </div>
+  </div>
+  <div class="wrapper2">
+    <div class="leftSideAbout">
+      <h4>Using it online</h4>
+      <a href="http://db.systemsbiology.net/kaviar/cgi-pub/Kaviar.pl">
+        <button type="button" class="queryKaviarButton">Query Kaviar</button>
+      </a>
+    </div>
+    <div class="rightSideAbout">
+      <ul>
+        <li>Query Kaviar interactively by clicking the <a href="http://db.systemsbiology.net/kaviar/cgi-pub/Kaviar.pl">Query Kaviar</a> button at left. This is approriate for small to medium size queries.</li>
+        <li>Query Kaviar as a web service at
+          <a href="http://db.systemsbiology.net/kaviar/cgi-pub/Kaviar.pl?format=json">this URL</a> in your code (here is <a href="http://db.systemsbiology.net/kaviar/KaviarWebService.pl">example usage</a>).
+        </li>
+        <li>Query Kaviar via its
+          <a href="http://db.systemsbiology.net/kaviar/cgi-pub/beacon">beacon</a>, as encouraged by the
+          <a href="http://genomicsandhealth.org/our-work/initiatives/beacon-project">GA4GH</a>.
+        </li>
+      </ul>
+      <em>Note: options in this box are only appropriate if you are not data restricted (e.g. by IRB protocols) to prevent use of web services for analysis.</em>
+    </div>
+  </div>
+  <div class="wrapper2">
+    <div class="leftSideAbout">
+      <h4>Downloads</h4>
+    </div>
+    <div class="rightSideAbout">
+      <ul>
+        <li><a href="http://s3-us-west-2.amazonaws.com/kaviar-160113-public/Kaviar-160113-Public-hg19-trim.vcf.tar">Download a 2.7 GB VCF file</a> containing alelle frequencies for all variants in Kaviar for GRCh37 (hg19).</li>
+        <li><a href="http://db.systemsbiology.net/kaviar/Kaviar.downloads.html">Browse other VCF downloads</a> containing data source annotations, omitting very rare variants (compact), and/or for other versions of the reference genome.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrapper2">
+    <div class="leftSideAbout">
+      <h4>Communication</h4>
+    </div>
+    <div class="rightSideAbout">
+      <ul>
+        <li>Questions and comments are
+          <a href="http://personal.systemsbiology.net/Gustavo/contacting.html">most welcome</a>!
+        </li>
+        <li>To be notified of updates, follow
+          <a href="https://twitter.com/GGlusman">via Twitter</a>, like us on <a href="https://www.facebook.com/kaviardb">Facebook</a>, or join the <a href="http://groups.google.com/d/forum/kaviar-announce">Kaviar-announce</a> google group.
+        </li>
+        <li>If you find Kaviar useful for your work, please cite:
+          <br>
+          <cite>Glusman G, Caballero J, Mauldin DE, Hood L and Roach J (2011) KAVIAR: an accessible system for testing SNV novelty. <a href="http://bioinformatics.oxfordjournals.org/content/early/2011/09/27/bioinformatics.btr540.abstract">Bioinformatics, doi: 10.1093/bioinformatics/btr540</a>.</cite>
+        </li>
+        <li>This version of Kaviar was built by <a href="https://www.systemsbiology.org/bio/terry-farrah/">Terry Farrah</a>
+        </li>
+        <li>Kaviar is funded by the <a href="http://www.inova.org/itmi/home">Inova Translational Medicine Institute</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <footer>
+  </footer>
+</body>

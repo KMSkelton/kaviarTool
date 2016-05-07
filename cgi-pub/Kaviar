@@ -1,0 +1,438 @@
+#!/tools/bin/perl
+$|=1;
+print header(
+  -type => 'text/json',
+  -content_location => 'mydata.ttl',
+  -access_control_allow_origin => '*',
+);
+use strict;
+use CGI qw/:standard :html3 -no_debug/;
+$CGI::POST_MAX=1024 * 100;  # max 100K posts
+use FindBin;
+use Data::Dumper;
+use POSIX qw(strftime);
+use lib "/proj/hoodlab/share/kaviar/Kaviar-160113-Public/lib";
+use Kaviar;
+
+my ($kavdir) =  "$FindBin::Bin" =~ m|.*/(\S+)/cgi-pub$|;
+
+my $logfile = "Kaviar.uselog";
+
+# print header('text/json');
+my $frz = param("frz");
+my $onebased = param("onebased");
+my $onebased_output = param("onebased_output");
+$onebased_output = $onebased if $onebased_output == 2; #2 means "same as input"
+my $pos = param("pos");
+my $chrom = sanitize(param("chrom")) || sanitize(param("chr"));
+$chrom =~ s/[\"]//g;
+$pos =~ s/[\"]//g;
+my $variant_type = sanitize(param("variant_type"));
+my $no_dbs = ($variant_type eq 'ranged');
+my $no_dbr = ($variant_type eq 'snvs');
+my $min_maf = fix_number(sanitize(param("min_maf"))) || 0;
+my $max_maf = fix_number(sanitize(param("max_maf"))) || 1;
+my $nofilters = ($variant_type eq 'all') && ($min_maf == 0) && ($max_maf == 1);
+
+## Change percent to float. Ensure number is
+## between 0 and 1 inclusive. Else, return nothing.
+sub fix_number {
+  my $number = shift;
+  my $percent = 0;
+  $number =~ s/\s//g;
+  if ($number =~ /\%$/) {
+    $percent = 1;
+    $number = substr($number, 0, -1);
+  }
+  if (($number =~ /^\d+$/) ||
+      ($number =~ /^\d*\.\d+/)) {
+      $number /= 100 if $percent;
+      return $number if $number <= 1;
+  }
+  return;
+}
+
+my $whois = sanitize(param("whois"));
+my $show = sanitize(param("show"));
+my $format = sanitize(param("format"));
+my $list = param("list");  # need a different sanitization
+my $filename = param('uploaded_file');
+$format ||= "json";
+if (!$filename && cgi_error()) {
+	print '{"Error":"File upload too large"}'."\n";
+	exit 0;
+}
+my @coordlist = split /\n/, $list;
+if ($filename) {
+  open TMPF, tmpFileName($filename);
+  while (<TMPF>) {
+    chomp;
+    push @coordlist, $_;
+  }
+  close TMPF;
+}
+my @new = map { sanitize($_) } @coordlist;
+@coordlist = @new;
+my @allchroms = map {"chr$_"} (1..22, 'X', 'Y', 'M');
+
+chomp(my $now = `date`);
+open LOGF, ">>$logfile" or print "Can't open logfile $logfile $!";
+my $test = param('file');
+print LOGF "params: $chrom $pos $list $filename $test\n";
+if ($show) {
+  print LOGF join("\t", $now, $ENV{'REMOTE_HOST'} || $ENV{'REMOTE_ADDR'}, $format, $show), "\n";
+} else {
+  print LOGF join("\t", $now, $ENV{'REMOTE_HOST'} || $ENV{'REMOTE_ADDR'}, $format, $frz, $onebased, $chrom, $pos), "\n";
+  if ($list) {
+    print LOGF $list, "\n";
+  }
+}
+close LOGF;
+
+$frz ||= "hg38";
+my %kv;
+$kv{$frz} = new Kaviar(freeze=>$frz);
+my @freezes = sort (split ",", $kv{$frz}->{'freezes'});
+for my $ofrz (@freezes) {
+  if ($ofrz ne $frz) {
+    $kv{$ofrz} = new Kaviar(freeze=>$ofrz);
+  }
+}
+my $ucsc = "http://genome.ucsc.edu/cgi-bin/hgTracks?db=$frz&position=";
+
+my $somethingWasSubmitted = 0;
+my %todo;
+my $notthefirstone = 0;
+if ($show eq "version") {
+  showVersion($kv{$frz}->version(), $format);
+} elsif ($show eq "sources") {
+  showSources($format);
+} else {
+  my ($rsids_found, $rsids_given) = (0,0);
+  if (@coordlist) {
+    $somethingWasSubmitted = 1;
+    foreach my $line (@coordlist) {
+      my ($chrom, $pos);
+      if ($line =~ /rs/) {
+	my ($rsid) = $line =~ /(rs\d+)/;
+	($chrom, $pos) = $kv{$frz}->get_rsid_pos($rsid);
+	$rsids_given++;
+	next unless $pos;
+	$rsids_found++;
+      } else {
+	($chrom, $pos) = $line =~ /(\S+?)[\:\s\_]+(.+)/;
+      }
+      $chrom = lc $chrom;
+      if ($chrom =~ /^\s*(\d+|X|Y|M)/i) {
+	$chrom = "chr" . uc $1;
+      } elsif ($chrom =~ /^\s*(chr|ch|c|chrom|chromosome)(\d+|X|Y|M)/i) {
+	$chrom = "chr" . uc $2;
+      }
+      # suck out all the adorning commas for numbers >= 1,000,000
+      while ($pos =~ /(.*?)(\D|^)(\d{1,3}),(\d\d\d),(\d\d\d)(\D|$)(.*)/) {
+	my $new = "$1$2$3$4$5$6$7";
+	#last if $1 =~ /\d$/;
+	$pos = $new;
+      }
+      # suck out all adorning commas for numbers <= 999,999
+      while ($pos =~ /(.*?)(\D|^)(\d{1,3}),(\d\d\d)(\D|$)(.*)/) {
+	my $new = "$1$2$3$4$5$6";
+	#last if $1 =~ /\d$/;
+	$pos = $new;
+      }
+      my ($start, $end);
+      foreach my $i (split /[,;\s]+/, $pos) {
+	if ($i =~ /-/) {
+	  ($start, $end) = ($i =~ /(.+)-(\d+)/); #this regex ensures $end is integer
+	} else{
+	  $start = $end = $i;
+	}
+	next if $start+1-1 ne $start;  # skip non-integers.
+	$todo{$chrom}{$start}{$end}++;
+      }
+    } #end foreach line
+  } elsif ($chrom && $pos) {
+    $somethingWasSubmitted = 1;
+    if ($chrom =~ /^\s*(\d+|X|Y|M)/i) {
+      $chrom = "chr" . uc $1;
+    } elsif ($chrom =~ /^\s*(chr|ch|c|chrom|chromosome)(\d+|X|Y|M)/i) {
+      $chrom = "chr" . uc $2;
+    }
+
+      # suck out all the adorning commas for numbers >= 1,000,000
+    while ($pos =~ /(.*?)(\D|^)(\d{1,3}),(\d\d\d),(\d\d\d)(\D|$)(.*)/) {
+      my $new = "$1$2$3$4$5$6$7";
+      #last if $1 =~ /\d$/;
+      $pos = $new;
+    }
+      # suck out all adorning commas for numbers <= 999,999
+    while ($pos =~ /(.*?)(\D|^)(\d{1,3}),(\d\d\d)(\D|$)(.*)/) {
+      my $new = "$1$2$3$4$5$6";
+      #last if $1 =~ /\d$/;
+      $pos = $new;
+    }
+    my ($start, $end);
+    foreach my $i (split /[,;\s]+/, $pos) {
+      if ($i =~ /-/) {
+	($start, $end) = ($i =~ /(.+)-(\d+)/); #this regex ensures $end is integer
+      } else{
+	$start = $end = $i;
+      }
+      next if $start+1-1 ne $start;  # skip non-integers.
+      $todo{$chrom}{$start}{$end}++;
+    }
+  } # end elsif
+
+  my $totalToDo = 0;
+  foreach my $chrom (keys %todo) {
+    $totalToDo += scalar keys %{$todo{$chrom}};
+  }
+
+  if ($totalToDo > 100000) {
+    print '{"Error:"Query sizes limited to 100000"}'."\n";
+    exit;
+  }
+  print "{\n";
+  if (keys %todo) {
+    print " \"sites\" :\n";
+    print "  [\n";
+    # Process the positions requested by chromosome
+    foreach my $chrom (@allchroms) {
+      next unless defined $todo{$chrom};
+
+      #For each requested position on this chromosome, in numerical order ...
+      foreach my $i (sort {$a<=>$b} keys %{$todo{$chrom}}) {
+	foreach my $j (sort {$a<=>$b} keys %{$todo{$chrom}{$i}}) {
+	my $coord = $i-$onebased;   #zero-based
+	my $coord2 = $j - $onebased;  #zero-based
+
+	if (($coord2 - $coord) > $kv{$frz}->{'maxlimit'}) {
+	  print '{"Error":"FATAL ERROR: Query range $chrom:$coord-$coord2 greater than limit '. $kv{$frz}->{'maxlimit'}.'"}'."\n";
+	  exit;
+	}
+
+	# Get the variants
+	# Returns: An arrayref of triplets [start, stop, info_href] where info_href
+	# points to a hash like %res. Coords are basezero.
+	my $res_aref = $kv{$frz}->allVariants(chromosome=>$chrom, start=>$coord, end=>$coord2, no_dbs=>$no_dbs, no_dbr=>$no_dbr, no_dbg=>1);
+	my @res = @{$res_aref};
+	#print "<pre>", Dumper(\@res), "</pre>";
+
+	  my %res_arefs;
+	  # Get results for all freezes in case nothing is found in query freeze
+	  for my $ofrz (@freezes) {
+	    $res_arefs{$ofrz} = $kv{$ofrz}->allVariants(chromosome=>$chrom, start=>$coord, end=>$coord2, no_dbs=>$no_dbs, no_dbr=>$no_dbr, no_dbg=>1);
+	  }
+
+	# Create a link to the UCSC genome browser for the input position/range
+	#my $range = ($i == $j) ? $i : "$i-$j";
+	my $range = ($i == $j) ? $coord+$onebased_output : sprintf "%d-%d", $coord+$onebased_output, $coord2+$onebased_output;
+	my $input_pos_link = join("", "<a href=\"", $ucsc, $chrom, ":", $coord-50, "-", $coord2+50, "\">", "$chrom:$range", "</a>");
+	# If any variants were found in Kaviar ...
+	my $retained = 0;
+	if (@res) {
+
+	    for my $site (@res) {
+	      #print "<pre>", Dumper($site), "</pre>";
+	      my %res = %{$site->[2]};
+	      my $start = $res{'start'}+1;  #convert to base 1
+	      my $end = $res{'end'}+1;
+
+	      # Get the statistics
+	      my %stat = $kv{$frz}->digest(%res);
+	      next unless (($stat{'maf'} > $min_maf) && ($stat{'maf'} < $max_maf));
+		
+	      $retained = 1;
+	      my $all_obs_href = $stat{'all_obs'};
+	      #print "<pre>", Dumper $all_obs_href, "</pre>";
+	      my $rsidref = $res{'rsids'};
+	      #my @vars = sort keys %{$res{'sources'}};
+	      # Sort by decreasing AC.
+	      my @vars = sort {$stat{'counts'}{$b} <=> $stat{'counts'}{$a}} keys  %{$stat{'counts'}};
+
+	      # Create a link to the UCSC genome browser for the output position/range
+	      my $range = ($start == $end) ? $start-1+$onebased_output : sprintf "%d-%d", $start-1+$onebased_output, $end-1+$onebased_output;
+	      my $hit_pos_link = join("", "<a href=\"", $ucsc, $chrom, ":", $coord-50, "-", $coord2+50, "\">", "$chrom:$range", "</a>");
+
+		print ",\n" if $notthefirstone;
+		$notthefirstone=1;
+		print "   {\n";
+
+		# chrom, position, end, rsids
+		print "    \"chromosome\" : \"$chrom\",\n";
+		printf "    \"position\" : %d ,\n", $start-1+$onebased_output;
+		printf "    \"end\" : %d ,\n", $end-1+$onebased_output;
+		my $rsids = join(", ", map {"\"$_\""} @{$rsidref}) if defined $rsidref;
+		print "    \"rsids\" : [$rsids],\n" if $rsids;
+	        if ($stat{'platform_specific'}) {
+			print "    \"comments\":\"Warning: seen mostly/only on $stat{'platform_specific'} platform.\",\n";
+		}
+		# variants. Incorrect. Deprecated.
+		#@var = map {"\"$_\" : [".join(",", map {ord($_)} $kv{$frz}->separateCodes($res{'sources'}{$_}   ))."]"} @vars;
+		#my @var = map {"\"$_\" : [".join(",", map {ord($_)} @{$kv{$frz}->separateCodes($res{'sources'}{$_})})."]"} @vars;
+		#print "    \"variants\" :\n     {\n";
+		#print "      ", join(",\n      ", @var), "\n";
+		#print "     }\n";
+
+		# variant details
+		print "    \"varInfo\" : [\n";
+		my $firstvar = 1;
+		for my $var (@vars) {
+		  my @varcodes = @{$kv{$frz}->separateCodes($res{'sources'}{$var})};
+		  my $varcodes = join(", ", map {expand($_, 1, $stat{'all_obs'}->{$var})} @varcodes);
+		  my $isRef = ($varcodes =~ m|reference|i) || ($var =~ m|reference|i);
+		  my $af = sprintf("%.6f", $stat{'frequency'}{$var}) ;
+		  print ",\n" unless $firstvar;
+		  $firstvar=0;
+		  print "      {\n";
+		  print "        \"variant\" : \"$var\",\n";
+		  print "        \"sources\" : \"$varcodes\",\n";
+		  print "        \"frequency\" : \"$af\"\n";
+		  print "      }";
+		}
+		print "\n";
+
+		print "    ]\n";
+		print "   }";
+
+	  }
+	} else {
+	  if ($nofilters) {
+	    if ($format eq "table") {
+	      # For table format, see if found at this position in another
+	      # freeze, or at a nearby position in this freeze.
+
+	      # First, see if this variant is seen in another freeze
+	      my $other_freezes = '';
+	      for my $ofrz (@freezes) {
+		$other_freezes .= " $ofrz" if @{$res_arefs{$ofrz}};;
+	      }
+	      if ($other_freezes) {
+		print "<tr><td colspan=4>&nbsp;</td></tr>\n";
+		print "<tr><td>";
+		print join("</td><td>", $input_pos_link, "-", "Not found in $frz but found in $other_freezes ");
+		print "</td></tr>\n";
+	      } else {
+
+		# If not, check for nearby variants in query reference genome
+		my $nearby_aref = $kv{$frz}->allVariants(chromosome=>$chrom, start=>$coord-100, end=>$coord2+1+100);
+		my @nearby = @{$nearby_aref};
+		my $closest = 1e5;
+		my @closest;
+		foreach my $var_aref (@nearby) {
+		  # Check both start and end to see if they are closest
+		  # to coord range of interest.
+		  my $start = $var_aref->[0]; #basezero
+		  my $end = $var_aref->[1]; #basezero
+
+		  my $d = abs($start-$coord); # coord and coord2 are basezero
+		  if ($d<$closest) {
+		    $closest = $d;
+		    @closest = ( [$start+$onebased, $end+$onebased]);
+		  } elsif ($d==$closest) {
+		    push @closest, [$start+$onebased, $end+$onebased];
+		  }
+
+		  if ($end != $start) {
+		    $d = abs($end-$coord2);
+		    if ($d<$closest) {
+		      $closest = $d;
+		      @closest = ( [$start+$onebased, $end+$onebased]);
+		    } elsif ($d==$closest) {
+		      push @closest, [$start+$onebased, $end+$onebased];
+		    }
+		  }
+		}
+
+		my $try_text = '';
+		if (scalar @closest == 1) {  # if there is just one closest variant
+		  if ($closest[0]->[0] == $closest[0]->[1]) { # if it is a SNV (begin == end)
+		    my $closest_snv = $closest[0]->[0]-$onebased;  #zerobased
+		    #print "onebased $onebased closest_snv $closest_snv coord $coord <b>\n";
+		    if (($onebased && ($closest_snv == $coord+1)) ||
+		      ((!$onebased) && ($closest_snv == $coord-1))) {
+		      $try_text = join("", "; try setting input coordinates to ", $onebased ? "zero" : "one", "-based");
+		    }
+		  }
+		}
+
+		my $nearbytext = '';
+		for my $pair_aref (@closest) {
+		  my $start = $pair_aref->[0]-$onebased+$onebased_output;
+		  my $end = $pair_aref->[1]-$onebased+$onebased_output;
+		  if ($start == $end) {
+		    $nearbytext .= " $start";
+		  } else {
+		    $nearbytext .= " $start-$end";
+		  }
+		}
+
+		$nearbytext = " (nearest: ${nearbytext}${try_text})" if $nearbytext;
+		my $message = "no known variants$nearbytext";
+		$message = "First coordinate must not be greater than second" if ($coord > $coord2);
+		print "<tr><td colspan=4>&nbsp;</td></tr>\n";
+		print "<tr><td>";
+		print join("</td><td>", $input_pos_link, "-", $message);
+		print "</td></tr>\n";
+	      }
+	    } elsif ($format eq 'json') {
+	      print ",\n" if $notthefirstone;
+	      print "   {\n";
+	      print "    \"chromosome\" : \"$chrom\",\n";
+	      print "    \"position\" : $i,\n";
+	      print "    \"varInfo\" : []\n";
+	      #print "    \"variants\" : {}\n";
+	      print "   }";
+	    }
+	  }
+	}
+	$notthefirstone++;
+      }
+    }
+
+    }
+      print "\n  ]\n";
+  } elsif ($rsids_given) {
+    print "Submitted rsid(s) not found in Kaviar<br><hr><br>\n";
+  } else {
+    if ($somethingWasSubmitted) {
+      print "<font color=\"red\">Sorry - couldn't interpret your input.</font> Did you use one of the <a href=\"http://db.systemsbiology.net/$kavdir/KaviarInputFormats.html\">supported formats</a>?<br><i>If you'd like this form to support additional input formats, <a href=\"http://personal.systemsbiology.net/Gustavo/contacting.html\">please let me know</a>!</i>";
+      print "<br><hr><br>\n";
+    } else {
+      print '"Error":"Nothing was submitted"'."\n";
+    }
+  }
+      print "}\n";
+}
+
+sub expand {
+  my($whois, $link_rsids, $obs_href) = @_;
+  my($whoistext);
+  if ($whois =~ /^rs/) {
+    return $whois unless $link_rsids;
+    my(@ids) = split /,/, $whois;
+    foreach my $id (@ids) {
+      $id =~ /rs(\d+)/;
+      $id = "<a href=\"http://www.ncbi.nlm.nih.gov/SNP/snp_ref.cgi?rs=$1\">$id</a>";
+    }
+    return join(", ", @ids);
+  }
+  ($whoistext) = $kv{$frz}->whois($whois);
+  my $obs_source_href = $obs_href->{$whois};
+  if (ref $obs_source_href eq 'HASH') {
+    my $ac = $obs_source_href->{'AC'};
+    $whoistext .= "($ac)" if defined $ac && $ac > 1;
+  }
+  if ($format eq "table") {
+    $whoistext =~ s/reference/<font color=red>Reference<\/font>/i;
+    #$whoistext =~ s/^(ISB|Inova)(.+)/<b><font color=green>$1$2<\/font><\/b>/i;
+    $whoistext = "<a href=\"whois.pl?code=".ord($whois)."\">$whoistext</a>";
+  }
+  return $whoistext;
+}
+
+sub sanitize {
+  my ($s) = @_;
+  $s =~ tr/\,\-\ :A-Za-z0-9//cd;
+  return $s;
+}

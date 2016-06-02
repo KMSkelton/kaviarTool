@@ -21,14 +21,14 @@
               </td>
             {{else }}
             {{/if }}
-            <td>
+            <td class="enSmallen">
                 {{ variant }} ({{ frequency }})
            </td>
             <td>
               {{ sources}}
             </td>
             {{#if @first}}
-            <td rowspan="{{../varInfo.length}}">
+            <td class="comments" rowspan="{{../varInfo.length}}">
               {{ ../comments }}
             </td>
             {{/if}}

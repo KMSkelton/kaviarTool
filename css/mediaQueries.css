@@ -44,4 +44,10 @@
     width: 100%;
     content: "Specify filters:"
   }
+  .enSmallen {
+    width: 20%;
+  }
+  .comments {
+    display: none;
+  }
 }

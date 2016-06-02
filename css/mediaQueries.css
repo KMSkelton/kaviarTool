@@ -44,10 +44,17 @@
     width: 100%;
     content: "Specify filters:"
   }
-  .enSmallen {
-    width: 20%;
+  table {
+    table-layout: fixed;
+    word-break:break-all;
   }
-  .comments {
+  .chrPos {
+    min-width: 5em;
+  }
+  .rsidMobile {
+    min-width: 5.5em;
+  }
+  .optional {
     display: none;
   }
 }

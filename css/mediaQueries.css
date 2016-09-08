@@ -44,4 +44,17 @@
     width: 100%;
     content: "Specify filters:"
   }
+  table {
+    table-layout: fixed;
+    word-break:break-all;
+  }
+  .chrPos {
+    min-width: 5em;
+  }
+  .rsidMobile {
+    min-width: 5.5em;
+  }
+  .optional {
+    display: none;
+  }
 }

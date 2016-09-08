@@ -4,8 +4,8 @@
           <th>Position</th>
           <th>RSID</th>
           <th>Variant</th>
-          <th>People/ Population</th>
-          <th>Comments</th>
+          <th class="optional">People/ Population</th>
+          <th class="optional">Comments</th>
         </tr>
       </thead>
       <tbody id="tableBody">
@@ -13,8 +13,8 @@
             {{#each varInfo}}
             <tr class="{{cycle 'odd even' siteIndex}}">
             {{#if @first }}
-              <td rowspan="{{../varInfo.length}}">{{ ../chromosome}} {{ ../position }}</td>
-              <td rowspan="{{../varInfo.length}}">
+              <td class="chrPos" rowspan="{{../varInfo.length}}">{{ ../chromosome}} {{ ../position }}</td>
+              <td class="rsidMobile" rowspan="{{../varInfo.length}}">
               {{#each ../rsids}}
                   {{ this }}{{#unless @last}},{{/unless}}
               {{/each}}
@@ -24,11 +24,11 @@
             <td>
                 {{ variant }} ({{ frequency }})
            </td>
-            <td>
+            <td class="optional">
               {{ sources}}
             </td>
             {{#if @first}}
-            <td rowspan="{{../varInfo.length}}">
+            <td class="optional" rowspan="{{../varInfo.length}}">
               {{ ../comments }}
             </td>
             {{/if}}
@@ -41,8 +41,8 @@
           <th>Position</th>
           <th>RSID</th>
           <th>Variant</th>
-          <th>People/ Population</th>
-          <th>Comments</th>
+          <th class="optional">People/ Population</th>
+          <th class="optional">Comments</th>
         </tr>
       </tfoot>
     </table>
